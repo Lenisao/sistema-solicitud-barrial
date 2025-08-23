@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambio de contraseña</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="volver">
+            <button type="button" class="button-back" onclick="window.history.back()">
+                <ion-icon name="chevron-back-outline"></ion-icon> Volver    
+            </button>      
+        </div>
+
+        <div class="container-form">
+            <form id="register-form">
+                <h2>Cambio de contraseña</h2>
+                <span>Ingrese su usuario y su nueva contraseña</span>
+
+                <div class="container-input">
+                    <ion-icon name="person-outline"></ion-icon>
+                    <input type="text" placeholder="Usuario" required>
+                </div>
+
+                <div class="container-input">
+                    <ion-icon name="lock-closed-outline"></ion-icon>
+                    <input type="password" id="password" placeholder="Contraseña" required>
+                </div>
+
+                <div class="container-input">
+                    <ion-icon name="lock-closed-outline"></ion-icon>
+                    <input type="password" id="confirm-password" placeholder="Confirmar contraseña" required>
+                </div>
+                <button type="submit" class="button">Cambiar contraseña</button>
+            </form>
+        </div>
+
+        <div class="volver">
+            <button type="button" class="button-back" onclick="window.history.back()">
+                <ion-icon name="chevron-back-outline"></ion-icon> Volver    
+            </button>      
+        </div>
+    </div>
+
+    
+    <script src="script.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</body>
+</html>

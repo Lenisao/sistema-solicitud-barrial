@@ -160,3 +160,30 @@ background-color: inherit;
 .container.container.toggle .welcome-sign-up{
     transform: translateX(-100%);
 }
+
+.volver {
+    position: absolute;     
+    top: 15px;              
+    left: 15px;           
+}
+
+.button-back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: auto;
+    padding: 8px 15px;
+    font-size: 14px;
+    border: 2px solid chocolate;
+    border-radius: 25px;
+    cursor: pointer;
+    background-color: transparent;
+    color: chocolate;
+    transition: all 0.3s ease-in-out;
+}
+
+.button-back:hover {
+    background-color: chocolate;
+    color: white;
+}
