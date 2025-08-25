@@ -38,7 +38,7 @@ function renderUsuario() {
     <input type="text" name="titulo" placeholder="Título" required>
     <textarea name="descripcion" placeholder="Descripción breve" required></textarea>
     <button type="submit">Enviar Solicitud</button>
-  `;
+    `;
     form.onsubmit = e => { e.preventDefault(); agregarSolicitud(form); };
     div.appendChild(form);
 
@@ -46,10 +46,10 @@ function renderUsuario() {
         const card = document.createElement("div");
         card.className = "card";
         card.innerHTML = `
-      <h3>${s.titulo}</h3>
-      <p>${s.descripcion}</p>
-      <p>Estado: <span class="badge ${s.estado}">${s.estado}</span></p>
-      ${s.estado === "completada" ? `<div class="stars" data-id="${s.id}"></div>` : ""}
+    <h3>${s.titulo}</h3>
+    <p>${s.descripcion}</p>
+    <p>Estado: <span class="badge ${s.estado}">${s.estado}</span></p>
+    ${s.estado === "completada" ? `<div class="stars" data-id="${s.id}"></div>` : ""}
     `;
         div.appendChild(card);
     });
@@ -89,10 +89,10 @@ function renderComite() {
         const card = document.createElement("div");
         card.className = "card";
         card.innerHTML = `
-      <h3>${s.titulo}</h3>
-      <p>${s.descripcion}</p>
-      <p>Estado: <span class="badge ${s.estado}">${s.estado}</span></p>
-      ${s.estado === "pendiente" ? `<button onclick="completarSolicitud(${s.id})">Marcar como Completada</button>` : ""}
+    <h3>${s.titulo}</h3>
+    <p>${s.descripcion}</p>
+    <p>Estado: <span class="badge ${s.estado}">${s.estado}</span></p>
+    ${s.estado === "pendiente" ? `<button onclick="completarSolicitud(${s.id})">Marcar como Completada</button>` : ""}
     `;
         div.appendChild(card);
     });
@@ -119,19 +119,19 @@ function renderAdmin() {
         card.className = "card";
 
         const estadoOptions = `
-      <select id="estado-${s.id}">
+    <select id="estado-${s.id}">
         <option value="pendiente" ${s.estado === "pendiente" ? "selected" : ""}>Pendiente</option>
         <option value="completada" ${s.estado === "completada" ? "selected" : ""}>Completada</option>
-      </select>
+    </select>
     `;
 
         card.innerHTML = `
-      <h3>Título: <input type="text" value="${s.titulo}" id="titulo-${s.id}"></h3>
-      <p>Descripción: <textarea id="desc-${s.id}">${s.descripcion}</textarea></p>
-      <p>Estado: ${estadoOptions} <span class="badge ${s.estado}">${s.estado}</span></p>
-      <p>Calificación: ${s.calificacion || "No calificada"}</p>
-      <button onclick="guardarCambios(${s.id})">Guardar Cambios</button>
-      <button onclick="borrarSolicitud(${s.id})" style="background-color:#e74c3c">Borrar Solicitud</button>
+    <h3>Título: <input type="text" value="${s.titulo}" id="titulo-${s.id}"></h3>
+    <p>Descripción: <textarea id="desc-${s.id}">${s.descripcion}</textarea></p>
+    <p>Estado: ${estadoOptions} <span class="badge ${s.estado}">${s.estado}</span></p>
+    <p>Calificación: ${s.calificacion || "No calificada"}</p>
+    <button onclick="guardarCambios(${s.id})">Guardar Cambios</button>
+    <button onclick="borrarSolicitud(${s.id})" style="background-color:#e74c3c">Borrar Solicitud</button>
     `;
 
         div.appendChild(card);
