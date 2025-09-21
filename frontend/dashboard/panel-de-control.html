@@ -11,15 +11,22 @@
 
 <body>
     <div class="dashboard">
-        <aside class="sidebar">
-            <h2>Menú</h2>
-            <ul>
-                <li onclick="showSection('solicitudes')">Solicitudes</li>
-                <li onclick="showSection('grafico')">Gráfico</li>
-                <li onclick="cerrarSesion()">Cerrar Sesión</li>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <h2 id="sidebar-title">Menú</h2>
+            <ul id="sidebar-menu">
+                <li id="menu-solicitudes" onclick="showSection('solicitudes')">Solicitudes</li>
+                <li id="menu-grafico" onclick="showSection('grafico')">Gráfico</li>
+                <li id="menu-cerrar" onclick="cerrarSesion()">Cerrar Sesión</li>
             </ul>
         </aside>
-        <main class="main-content" id="app"></main>
+
+        <!-- Main content -->
+        <main class="main-content" id="app">
+            <!-- Aquí se cargará dinámicamente el contenido según el rol y sección -->
+        </main>
+
     </div>
 
     <script src="app.js"></script>

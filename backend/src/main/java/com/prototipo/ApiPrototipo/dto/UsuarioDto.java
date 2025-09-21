@@ -9,11 +9,11 @@ public class UsuarioDto {
     private Boolean estadoUsuario;
     private String descripcionEstadoUsuario;
 
-    public UsuarioDto(){}
+    public UsuarioDto() {
+    }
 
     public UsuarioDto(Short codigoUsuario, String loginUsuario, String nombreUsuario,
-                      String numeroIdentificacion, String claveUsuario, Boolean estadoUsuario, String descripcionEstadoUsuario)
-    {
+            String numeroIdentificacion, String claveUsuario, Boolean estadoUsuario, String descripcionEstadoUsuario) {
         this.codigoUsuario = codigoUsuario;
         this.loginUsuario = loginUsuario;
         this.nombreUsuario = nombreUsuario;

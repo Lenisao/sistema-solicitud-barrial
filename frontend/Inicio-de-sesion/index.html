@@ -28,7 +28,7 @@
                 <button type="submit" class="button">Iniciar sesión</button>
             </form>
 
-            <p id="mensaje"></p> <!-- Aquí mostraremos respuesta del backend -->
+            <p id="mensaje"></p> <!-- Mensaje opcional -->
 
         </div>
 
@@ -63,7 +63,6 @@
             <p id="signupMensaje"></p>
         </div>
 
-
         <div class="container-welcome welcome">
             <div class="welcome-sign-up welcome">
                 <h3>¡Bienvenido!</h3>
@@ -77,15 +76,14 @@
                 <button class="button" id="btn-sign-in">Iniciar sesión</button>
             </div>
         </div>
-
     </div>
 
-
+    <!-- Contenedor de mensajes flotantes -->
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;"></div>
 
     <script src="script.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-
 </body>
 
 </html>

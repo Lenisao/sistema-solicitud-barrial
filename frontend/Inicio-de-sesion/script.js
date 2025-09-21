@@ -3,13 +3,8 @@ const btnSignIn = document.getElementById("btn-sign-in");
 const btnSignUp = document.getElementById("btn-sign-up");
 
 // Cambiar entre login y registro
-btnSignIn.addEventListener("click", () => {
-    container.classList.remove("toggle");
-});
-
-btnSignUp.addEventListener("click", () => {
-    container.classList.add("toggle");
-});
+btnSignIn.addEventListener("click", () => container.classList.remove("toggle"));
+btnSignUp.addEventListener("click", () => container.classList.add("toggle"));
 
 document.addEventListener("DOMContentLoaded", () => {
     // ------------------------- LOGIN -------------------------
@@ -26,16 +21,20 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch("http://localhost:8080/api/seguridad/existeUsuario", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    loginUsuario: email,
-                    claveUsuario: password
-                })
+                body: JSON.stringify({ loginUsuario: email, claveUsuario: password })
             });
 
-            const data = await response.json();
+            const text = await response.text();
+            let data;
+            try { data = JSON.parse(text); } catch { data = text; }
+
             console.log("Respuesta login:", data);
 
             if (data.codigoUsuario && data.codigoUsuario > 0) {
+                // Guardar sesión en sessionStorage
+                sessionStorage.setItem("userEmail", data.loginUsuario);
+                sessionStorage.setItem("userRole", data.nombreRol);
+
                 mensaje.textContent = "Inicio de sesión correcto";
                 mensaje.style.color = "green";
 
@@ -76,21 +75,25 @@ document.addEventListener("DOMContentLoaded", () => {
                     nombreUsuario: nombre,
                     numeroIdentificacion: identificacion,
                     claveUsuario: clave,
-                    estadoUsuario: true,
-                    descripcionEstadoUsuario: ""
+                    estadoUsuario: true
                 })
             });
 
-            const data = await response.json();
+            const text = await response.text();
+            let data;
+            try { data = JSON.parse(text); } catch { data = text; }
+
             console.log("Respuesta registro:", data);
 
-            if (data.codigoUsuario && data.codigoUsuario > 0) {
-                signupMensaje.textContent = "Registro exitoso";
+            if ((data.co_msg && data.co_msg === 1) || data === "1") {
+                signupMensaje.textContent = "Usuario creado correctamente";
                 signupMensaje.style.color = "green";
 
                 setTimeout(() => {
-                    window.location.href = "../dashboard/panel-de-control.html";
-                }, 1000);
+                    signupForm.reset();
+                    container.classList.remove("toggle");
+                    signupMensaje.textContent = "";
+                }, 1500);
             } else {
                 signupMensaje.textContent = "Error al registrar usuario";
                 signupMensaje.style.color = "red";
