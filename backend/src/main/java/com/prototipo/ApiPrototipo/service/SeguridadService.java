@@ -19,7 +19,7 @@ public class SeguridadService {
     public UsuarioDto login(UsuarioDto request) {
         RespuestaDto resultado = seguridadRepository.login(request.getLoginUsuario(), request.getClaveUsuario());
 
-        if (resultado.getCodigoError()!=0) {
+        if (resultado.getCodigoError() != 0) {
             return null; // o lanzar excepción personalizada
         }
 
@@ -27,7 +27,8 @@ public class SeguridadService {
         List<UsuarioDto> listaUsuarios = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            listaUsuarios = mapper.readValue(body,new TypeReference<List<UsuarioDto>>() {});
+            listaUsuarios = mapper.readValue(body, new TypeReference<List<UsuarioDto>>() {
+            });
         } catch (JsonProcessingException e) {
             System.err.println("Error al convertir a JSON: " + e.getMessage());
             body = "[]";
@@ -43,7 +44,7 @@ public class SeguridadService {
     public List<MenuDto> obtieneMenu(UsuarioDto request) {
         RespuestaDto resultado = seguridadRepository.obtieneMenu(request.getLoginUsuario());
 
-        if (resultado.getCodigoError()!=0) {
+        if (resultado.getCodigoError() != 0) {
             return null; // o lanzar excepción personalizada
         }
 
@@ -51,7 +52,8 @@ public class SeguridadService {
         List<MenuDto> listaMenu = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            listaMenu = mapper.readValue(body,new TypeReference<List<MenuDto>>() {});
+            listaMenu = mapper.readValue(body, new TypeReference<List<MenuDto>>() {
+            });
         } catch (JsonProcessingException e) {
             System.err.println("Error al convertir a JSON: " + e.getMessage());
             body = "[]";
@@ -67,7 +69,7 @@ public class SeguridadService {
     public RespuestaDto cambiarClave(UsuarioDto request) {
         RespuestaDto resultado = seguridadRepository.cambiarClave(request.getLoginUsuario(), request.getClaveUsuario());
 
-        if (resultado.getCodigoError()!=0) {
+        if (resultado.getCodigoError() != 0) {
             return null; // o lanzar excepción personalizada
         }
 
@@ -77,7 +79,7 @@ public class SeguridadService {
     public List<RolDto> listarRoles() {
         RespuestaDto resultado = seguridadRepository.listarRoles();
 
-        if (resultado.getCodigoError()!=0) {
+        if (resultado.getCodigoError() != 0) {
             return null; // o lanzar excepción personalizada
         }
 
@@ -85,7 +87,8 @@ public class SeguridadService {
         List<RolDto> listaRol = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            listaRol = mapper.readValue(body,new TypeReference<List<RolDto>>() {});
+            listaRol = mapper.readValue(body, new TypeReference<List<RolDto>>() {
+            });
         } catch (JsonProcessingException e) {
             System.err.println("Error al convertir a JSON: " + e.getMessage());
             body = "[]";
@@ -99,9 +102,10 @@ public class SeguridadService {
     }
 
     public RespuestaDto mantenimientoRol(RolDto request) {
-        RespuestaDto resultado = seguridadRepository.mantenimientoRol(request.getCodigoRol(), request.getNombreRol(),request.getEstadoRol());
+        RespuestaDto resultado = seguridadRepository.mantenimientoRol(request.getCodigoRol(), request.getNombreRol(),
+                request.getEstadoRol());
 
-        if (resultado.getCodigoError()!=0) {
+        if (resultado.getCodigoError() != 0) {
             return null; // o lanzar excepción personalizada
         }
 
@@ -111,7 +115,7 @@ public class SeguridadService {
     public List<RolDto> obtenerRol() {
         RespuestaDto resultado = seguridadRepository.obtenerRol();
 
-        if (resultado.getCodigoError()!=0) {
+        if (resultado.getCodigoError() != 0) {
             return null; // o lanzar excepción personalizada
         }
 
@@ -119,7 +123,8 @@ public class SeguridadService {
         List<RolDto> listaRol = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            listaRol = mapper.readValue(body,new TypeReference<List<RolDto>>() {});
+            listaRol = mapper.readValue(body, new TypeReference<List<RolDto>>() {
+            });
         } catch (JsonProcessingException e) {
             System.err.println("Error al convertir a JSON: " + e.getMessage());
             body = "[]";
@@ -136,7 +141,7 @@ public class SeguridadService {
         Short codigoPadre = request.getCodigoOpcionPadre();
         RespuestaDto resultado = seguridadRepository.listarOpcionMenu(codigoPadre);
 
-        if (resultado.getCodigoError()!=0) {
+        if (resultado.getCodigoError() != 0) {
             return null; // o lanzar excepción personalizada
         }
 
@@ -144,7 +149,8 @@ public class SeguridadService {
         List<OpcionMenuDto> listaOpcionMenu = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            listaOpcionMenu = mapper.readValue(body,new TypeReference<List<OpcionMenuDto>>() {});
+            listaOpcionMenu = mapper.readValue(body, new TypeReference<List<OpcionMenuDto>>() {
+            });
         } catch (JsonProcessingException e) {
             System.err.println("Error al convertir a JSON: " + e.getMessage());
             body = "[]";
@@ -158,10 +164,11 @@ public class SeguridadService {
     }
 
     public RespuestaDto mantenimientoOpcionMenu(OpcionMenuDto request) {
-        RespuestaDto resultado = seguridadRepository.mantenimientoOpcionMenu(request.getCodigoOpcion(), request.getCodigoOpcionPadre(),
-                                                                             request.getNombreOpcion(), request.getUrlOpcion(), request.getEstadoOpcion());
+        RespuestaDto resultado = seguridadRepository.mantenimientoOpcionMenu(request.getCodigoOpcion(),
+                request.getCodigoOpcionPadre(),
+                request.getNombreOpcion(), request.getUrlOpcion(), request.getEstadoOpcion());
 
-        if (resultado.getCodigoError()!=0) {
+        if (resultado.getCodigoError() != 0) {
             return null; // o lanzar excepción personalizada
         }
 
@@ -171,7 +178,7 @@ public class SeguridadService {
     public List<OpcionMenuDto> obtenerOpcionMenuPadre() {
         RespuestaDto resultado = seguridadRepository.obtenerOpcionMenuPadre();
 
-        if (resultado.getCodigoError()!=0) {
+        if (resultado.getCodigoError() != 0) {
             return null; // o lanzar excepción personalizada
         }
 
@@ -179,7 +186,8 @@ public class SeguridadService {
         List<OpcionMenuDto> listaOpcionMenuPadre = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
-            listaOpcionMenuPadre = mapper.readValue(body,new TypeReference<List<OpcionMenuDto>>() {});
+            listaOpcionMenuPadre = mapper.readValue(body, new TypeReference<List<OpcionMenuDto>>() {
+            });
         } catch (JsonProcessingException e) {
             System.err.println("Error al convertir a JSON: " + e.getMessage());
             body = "[]";
@@ -193,15 +201,19 @@ public class SeguridadService {
     }
 
     public RespuestaDto mantenimientoUsuario(UsuarioDto request) {
-        RespuestaDto resultado = seguridadRepository.mantenimientoUsuario(request.getCodigoUsuario(), request.getLoginUsuario(),
-                request.getNombreUsuario(), request.getClaveUsuario(), request.getNumeroIdentificacion(), request.getEstadoUsuario());
+        RespuestaDto resultado = seguridadRepository.mantenimientoUsuario(
+                request.getCodigoUsuario(),
+                request.getLoginUsuario(),
+                request.getNombreUsuario(),
+                request.getNumeroIdentificacion(), // primero la identificación
+                request.getClaveUsuario(), // después la clave
+                request.getEstadoUsuario());
 
-        if (resultado.getCodigoError()!=0) {
+        if (resultado.getCodigoError() != 0) {
             return null; // o lanzar excepción personalizada
         }
 
         return resultado;
     }
-
 
 }

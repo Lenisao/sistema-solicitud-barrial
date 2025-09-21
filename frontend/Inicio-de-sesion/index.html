@@ -33,27 +33,36 @@
         </div>
 
         <div class="container-form">
-            <form class="sign-up">
+            <form class="sign-up" id="signupForm">
                 <h2>Registrarse</h2>
                 <span>Utilice su correo para registrarse</span>
 
                 <div class="container-input">
                     <ion-icon name="person-outline"></ion-icon>
-                    <input type="text" placeholder="Ingrese su nombre..." required>
+                    <input type="text" id="nombre" placeholder="Ingrese su nombre..." required>
+                </div>
+
+                <div class="container-input">
+                    <ion-icon name="card-outline"></ion-icon>
+                    <input type="text" id="identificacion" placeholder="Ingrese su identificación..." required>
                 </div>
 
                 <div class="container-input">
                     <ion-icon name="mail-outline"></ion-icon>
-                    <input type="email" placeholder="Ingrese su correo..." required>
+                    <input type="email" id="correo" placeholder="Ingrese su correo..." required>
                 </div>
 
                 <div class="container-input">
                     <ion-icon name="lock-closed-outline"></ion-icon>
-                    <input type="password" placeholder="Ingrese su contraseña..." required>
+                    <input type="password" id="clave" placeholder="Ingrese su contraseña..." required>
                 </div>
-                <button class="button">Registrarse</button>
+
+                <button type="submit" class="button">Registrarse</button>
             </form>
+
+            <p id="signupMensaje"></p>
         </div>
+
 
         <div class="container-welcome welcome">
             <div class="welcome-sign-up welcome">

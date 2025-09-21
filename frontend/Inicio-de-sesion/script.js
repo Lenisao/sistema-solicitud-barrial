@@ -2,6 +2,7 @@ const container = document.querySelector(".container");
 const btnSignIn = document.getElementById("btn-sign-in");
 const btnSignUp = document.getElementById("btn-sign-up");
 
+// Cambiar entre login y registro
 btnSignIn.addEventListener("click", () => {
     container.classList.remove("toggle");
 });
@@ -10,65 +11,95 @@ btnSignUp.addEventListener("click", () => {
     container.classList.add("toggle");
 });
 
-const form = document.getElementById("register-form");
-
-form.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("confirm-password").value;
-
-    if (password !== confirmPassword) {
-        alert("Las contraseñas no coinciden");
-    } else {
-        alert("Registro exitoso");
-        // Aquí podrías enviar los datos al servidor
-        form.reset();
-    }
-});
-
-
-//Consumir el API para logins
 document.addEventListener("DOMContentLoaded", () => {
-    const loginForm = document.querySelector(".sign-in");
+    // ------------------------- LOGIN -------------------------
+    const loginForm = document.getElementById("loginForm");
+    const mensaje = document.getElementById("mensaje");
 
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        // tomar valores del form
-        const correo = loginForm.querySelector('input[type="email"]').value;
-        const clave = loginForm.querySelector('input[type="password"]').value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
 
         try {
             const response = await fetch("http://localhost:8080/api/seguridad/existeUsuario", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    correo: correo,   // debe coincidir con UsuarioDto
-                    clave: clave
+                    loginUsuario: email,
+                    claveUsuario: password
                 })
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                console.log("Login exitoso:", data);
+            const data = await response.json();
+            console.log("Respuesta login:", data);
 
-                // ejemplo: guardar usuario en localStorage
-                localStorage.setItem("usuario", JSON.stringify(data));
+            if (data.codigoUsuario && data.codigoUsuario > 0) {
+                mensaje.textContent = "Inicio de sesión correcto";
+                mensaje.style.color = "green";
 
-                // redirigir a otra página
-                window.location.href = "dashboard.html";
-            } else if (response.status === 401) {
-                alert("Credenciales incorrectas");
+                setTimeout(() => {
+                    window.location.href = "../dashboard/panel-de-control.html";
+                }, 1000);
             } else {
-                alert("Error al iniciar sesión");
+                mensaje.textContent = "Usuario o contraseña incorrectos";
+                mensaje.style.color = "red";
             }
+
         } catch (error) {
-            console.error("Error de red:", error);
-            alert("No se pudo conectar con el servidor.");
+            console.error("Error al consumir API:", error);
+            mensaje.textContent = "Error al conectar con el servidor";
+            mensaje.style.color = "red";
+        }
+    });
+
+    // ------------------------- REGISTRO -------------------------
+    const signupForm = document.getElementById("signupForm");
+    const signupMensaje = document.getElementById("signupMensaje");
+
+    signupForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const nombre = document.getElementById("nombre").value;
+        const identificacion = document.getElementById("identificacion").value;
+        const correo = document.getElementById("correo").value;
+        const clave = document.getElementById("clave").value;
+
+        try {
+            const response = await fetch("http://localhost:8080/api/seguridad/mantenimientoUsuario", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    codigoUsuario: 0,
+                    loginUsuario: correo,
+                    nombreUsuario: nombre,
+                    numeroIdentificacion: identificacion,
+                    claveUsuario: clave,
+                    estadoUsuario: true,
+                    descripcionEstadoUsuario: ""
+                })
+            });
+
+            const data = await response.json();
+            console.log("Respuesta registro:", data);
+
+            if (data.codigoUsuario && data.codigoUsuario > 0) {
+                signupMensaje.textContent = "Registro exitoso";
+                signupMensaje.style.color = "green";
+
+                setTimeout(() => {
+                    window.location.href = "../dashboard/panel-de-control.html";
+                }, 1000);
+            } else {
+                signupMensaje.textContent = "Error al registrar usuario";
+                signupMensaje.style.color = "red";
+            }
+
+        } catch (error) {
+            console.error("Error al consumir API:", error);
+            signupMensaje.textContent = "Error al conectar con el servidor";
+            signupMensaje.style.color = "red";
         }
     });
 });
-
