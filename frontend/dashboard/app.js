@@ -21,34 +21,60 @@ async function cargarUsuario() {
     try {
         if (!userEmail) return;
 
-        const response = await fetch("http://localhost:8080/api/seguridad/existeUsuario", {
+        // Validar que el usuario existe
+        const responseExiste = await fetch("http://localhost:8080/api/seguridad/existeUsuario", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ loginUsuario: userEmail })
         });
 
-        if (!response.ok) {
-            console.error("Error al cargar usuario:", response.status);
+        if (!responseExiste.ok) {
+            console.error("Error al verificar usuario:", responseExiste.status);
             return;
         }
 
-        const data = await response.json();
-        console.log("Usuario logueado:", data);
+        const usuarioData = await responseExiste.json();
+        console.log("Usuario logueado:", usuarioData);
 
-        userRole = data.nombreRol ? data.nombreRol.toUpperCase() : null;
+        // Obtener menú/rol del usuario
+        const responseMenu = await fetch("http://localhost:8080/api/seguridad/obtieneMenu", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ loginUsuario: userEmail })
+        });
+
+        if (!responseMenu.ok) {
+            console.error("Error al obtener menú:", responseMenu.status);
+            return;
+        }
+
+        const menuData = await responseMenu.json();
+        console.log("Opciones de menú:", menuData);
+
+        // Asumimos que el backend devuelve el rol dentro de la primera opción del menú
+        if (Array.isArray(menuData) && menuData.length > 0) {
+            userRole = menuData[0].nombreRol?.toUpperCase() || null;
+        } else {
+            userRole = null;
+        }
+
         sessionStorage.setItem("userRole", userRole);
+
     } catch (error) {
         console.error("Error al cargar usuario:", error);
     }
 }
 
+
 async function cargarSolicitudes() {
     try {
         const response = await fetch("http://localhost:8080/api/solicitudes");
+        if (!response.ok) throw new Error("No se pudo cargar solicitudes");
         solicitudes = await response.json();
         console.log("Solicitudes cargadas:", solicitudes);
     } catch (error) {
         console.error("Error al cargar solicitudes:", error);
+        solicitudes = [];
     }
 }
 
@@ -70,21 +96,35 @@ function renderApp() {
 
     if (currentSection === "solicitudes") {
         switch(userRole) {
-            case "COMUNIDAD":
-                renderUsuario();
-                break;
-            case "COMITE":
-                renderComite();
-                break;
-            case "ADMINISTRADOR":
-                renderAdmin();
-                break;
-            default:
-                console.warn("Rol desconocido:", userRole);
-                break;
+            case "COMUNIDAD": renderUsuario(); break;
+            case "COMITE": renderComite(); break;
+            case "ADMINISTRADOR": renderAdmin(); break;
+            default: console.warn("Rol desconocido:", userRole); break;
         }
     } else if (currentSection === "grafico") {
         renderGrafico();
+    }
+}
+
+// --------------------- Función común para agregar solicitud ---------------------
+async function agregarSolicitud(form) {
+    const titulo = form.querySelector('input[name="titulo"]').value.trim();
+    const descripcion = form.querySelector('textarea[name="descripcion"]').value.trim();
+    const emailUsuario = form.querySelector('input[name="emailUsuario"]')?.value.trim() || userEmail;
+    if (!titulo || !descripcion) return;
+
+    try {
+        const response = await fetch("http://localhost:8080/api/solicitudes", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ titulo, descripcion, estado: "pendiente", emailUsuario })
+        });
+        const nueva = await response.json();
+        solicitudes.push(nueva);
+        renderApp();
+        alert("Solicitud enviada correctamente");
+    } catch (error) {
+        console.error("Error al agregar solicitud:", error);
     }
 }
 
@@ -94,7 +134,6 @@ function renderUsuario() {
     div.id = "usuario-section";
     div.innerHTML = `<h2>Mis Solicitudes</h2>`;
 
-    // Formulario para agregar solicitud
     const form = document.createElement("form");
     form.id = "usuario-form";
     form.innerHTML = `
@@ -102,13 +141,9 @@ function renderUsuario() {
         <textarea name="descripcion" placeholder="Descripción breve" required></textarea>
         <button type="submit">Enviar Solicitud</button>
     `;
-    form.onsubmit = async e => { 
-        e.preventDefault(); 
-        await agregarSolicitud(form); 
-    };
+    form.onsubmit = async e => { e.preventDefault(); await agregarSolicitud(form); };
     div.appendChild(form);
 
-    // Mostrar solicitudes del usuario
     solicitudes.forEach(s => {
         if (!s.emailUsuario || s.emailUsuario.toLowerCase() !== userEmail.toLowerCase()) return;
 
@@ -124,7 +159,6 @@ function renderUsuario() {
         div.appendChild(card);
     });
 
-    // Mini gráfico de solicitudes del usuario
     const graficoDiv = document.createElement("div");
     graficoDiv.innerHTML = `<h3>Gráfico de Mis Solicitudes</h3><canvas id="chartUsuario" height="150"></canvas>`;
     div.appendChild(graficoDiv);
@@ -135,24 +169,87 @@ function renderUsuario() {
     renderGraficoUsuario();
 }
 
-// --------------------- Agregar Solicitud ---------------------
-async function agregarSolicitud(form) {
-    const titulo = form.querySelector('input[name="titulo"]').value.trim();
-    const descripcion = form.querySelector('textarea[name="descripcion"]').value.trim();
-    if (!titulo || !descripcion) return;
+// --------------------- Render Comité ---------------------
+function renderComite() {
+    const div = document.createElement("div");
+    div.id = "comite-section";
+    div.innerHTML = `<h2>Solicitudes a gestionar</h2>`;
+
+    solicitudes.forEach(s => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.id = `solicitud-${s.id}`;
+        card.innerHTML = `
+            <h3>${s.titulo}</h3>
+            <p>${s.descripcion}</p>
+            <p>Estado: <span class="badge ${s.estado}">${s.estado}</span></p>
+            ${s.estado === "pendiente" ? `<button onclick="completarSolicitud(${s.id})">Marcar como Completada</button>` : ""}
+        `;
+        div.appendChild(card);
+    });
+
+    app.appendChild(div);
+}
+
+// --------------------- Render Administrador ---------------------
+function renderAdmin() {
+    const div = document.createElement("div");
+    div.id = "admin-section";
+    div.innerHTML = `<h2>Administrador - Control Total</h2>`;
+
+    // Formulario para crear nueva solicitud
+    const form = document.createElement("form");
+    form.id = "admin-form";
+    form.innerHTML = `
+        <h3>Crear Nueva Solicitud</h3>
+        <input type="text" name="titulo" placeholder="Título" required>
+        <textarea name="descripcion" placeholder="Descripción breve" required></textarea>
+        <input type="email" name="emailUsuario" placeholder="Email del solicitante" value="${userEmail}" required>
+        <button type="submit">Enviar Solicitud</button>
+    `;
+    form.onsubmit = async e => { e.preventDefault(); await agregarSolicitud(form); };
+    div.appendChild(form);
+
+    solicitudes.forEach(s => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.id = `solicitud-${s.id}`;
+        card.innerHTML = `
+            <h3>Título: <input type="text" value="${s.titulo}" id="titulo-${s.id}"></h3>
+            <p>Descripción: <textarea id="desc-${s.id}">${s.descripcion}</textarea></p>
+            <p>Estado: 
+                <select id="estado-${s.id}">
+                    <option value="pendiente" ${s.estado==="pendiente"?"selected":""}>Pendiente</option>
+                    <option value="completada" ${s.estado==="completada"?"selected":""}>Completada</option>
+                </select>
+                <span class="badge ${s.estado}">${s.estado}</span>
+            </p>
+            <p>Calificación: ${s.calificacion || "No calificada"}</p>
+            <button onclick="guardarCambios(${s.id})">Guardar Cambios</button>
+            <button onclick="borrarSolicitud(${s.id})" style="background-color:#e74c3c">Borrar Solicitud</button>
+        `;
+        div.appendChild(card);
+    });
+
+    app.appendChild(div);
+}
+
+// --------------------- Completar Solicitud ---------------------
+async function completarSolicitud(id) {
+    const descripcion = prompt("Describe lo que se hizo:");
+    if (!descripcion) return;
 
     try {
-        const response = await fetch("http://localhost:8080/api/solicitudes", {
+        const response = await fetch(`http://localhost:8080/api/solicitudes/${id}/completar`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ titulo, descripcion, estado: "pendiente", emailUsuario: userEmail })
+            body: JSON.stringify({ descripcion })
         });
-        const nueva = await response.json();
-        solicitudes.push(nueva);
+        const updated = await response.json();
+        solicitudes = solicitudes.map(s => s.id === id ? updated : s);
         renderApp();
-        alert("Solicitud enviada correctamente");
     } catch (error) {
-        console.error("Error al agregar solicitud:", error);
+        console.error("Error al completar solicitud:", error);
     }
 }
 
@@ -184,78 +281,7 @@ function renderStars() {
     });
 }
 
-// --------------------- Render Comité ---------------------
-function renderComite() {
-    const div = document.createElement("div");
-    div.id = "comite-section";
-    div.innerHTML = `<h2>Solicitudes a gestionar</h2>`;
-
-    solicitudes.forEach(s => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.id = `solicitud-${s.id}`;
-        card.innerHTML = `
-            <h3>${s.titulo}</h3>
-            <p>${s.descripcion}</p>
-            <p>Estado: <span class="badge ${s.estado}">${s.estado}</span></p>
-            ${s.estado === "pendiente" ? `<button onclick="completarSolicitud(${s.id})">Marcar como Completada</button>` : ""}
-        `;
-        div.appendChild(card);
-    });
-
-    app.appendChild(div);
-}
-
-// --------------------- Completar Solicitud ---------------------
-async function completarSolicitud(id) {
-    const descripcion = prompt("Describe lo que se hizo:");
-    if (!descripcion) return;
-
-    try {
-        const response = await fetch(`http://localhost:8080/api/solicitudes/${id}/completar`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ descripcion })
-        });
-        const updated = await response.json();
-        solicitudes = solicitudes.map(s => s.id === id ? updated : s);
-        renderApp();
-    } catch (error) {
-        console.error("Error al completar solicitud:", error);
-    }
-}
-
-// --------------------- Render Administrador ---------------------
-function renderAdmin() {
-    const div = document.createElement("div");
-    div.id = "admin-section";
-    div.innerHTML = `<h2>Administrador - Control Total</h2>`;
-
-    solicitudes.forEach(s => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.id = `solicitud-${s.id}`;
-        card.innerHTML = `
-            <h3>Título: <input type="text" value="${s.titulo}" id="titulo-${s.id}"></h3>
-            <p>Descripción: <textarea id="desc-${s.id}">${s.descripcion}</textarea></p>
-            <p>Estado: 
-                <select id="estado-${s.id}">
-                    <option value="pendiente" ${s.estado==="pendiente"?"selected":""}>Pendiente</option>
-                    <option value="completada" ${s.estado==="completada"?"selected":""}>Completada</option>
-                </select>
-                <span class="badge ${s.estado}">${s.estado}</span>
-            </p>
-            <p>Calificación: ${s.calificacion || "No calificada"}</p>
-            <button onclick="guardarCambios(${s.id})">Guardar Cambios</button>
-            <button onclick="borrarSolicitud(${s.id})" style="background-color:#e74c3c">Borrar Solicitud</button>
-        `;
-        div.appendChild(card);
-    });
-
-    app.appendChild(div);
-}
-
-// --------------------- Render Gráfico Global ---------------------
+// --------------------- Render gráfico global ---------------------
 function renderGrafico() {
     app.innerHTML = `<h2>Gráfico de Solicitudes</h2><canvas id="chartSolicitudes" height="150"></canvas>`;
 
@@ -273,7 +299,7 @@ function renderGrafico() {
     });
 }
 
-// --------------------- Render Gráfico Usuario ---------------------
+// --------------------- Render gráfico usuario ---------------------
 function renderGraficoUsuario() {
     const canvas = document.getElementById('chartUsuario');
     if (!canvas) return;
@@ -307,9 +333,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error("No se pudo determinar el rol del usuario");
         return;
     }
-
-    userRole = userRole.toUpperCase();
-    sessionStorage.setItem("userRole", userRole);
 
     await cargarSolicitudes();
     renderApp();

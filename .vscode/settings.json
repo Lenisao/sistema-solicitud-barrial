@@ -1,3 +1,4 @@
 {
-    "java.compile.nullAnalysis.mode": "automatic"
+    "java.compile.nullAnalysis.mode": "automatic",
+    "livePreview.defaultPreviewPath": "/frontend/Inicio-de-sesion/index.html"
 }
